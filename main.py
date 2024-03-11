@@ -62,7 +62,7 @@ def main():
 
         
         if os.path.exists(f"{store_name}"):
-            VectorStore = FAISS.load_local(f"{store_name}", OpenAIEmbeddings())
+            VectorStore = FAISS.load_local(f"{store_name}", OpenAIEmbeddings(),allow_dangerous_deserialization=True)
 
         else:            
             embeddings = OpenAIEmbeddings()
