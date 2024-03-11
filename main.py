@@ -9,7 +9,12 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 import os
+import openai
 
+st.set_page_config(
+    page_title="pdf_assistant",
+    page_icon="📘"
+)
 with st.sidebar:
         st.title('🤗💬 LLM Chat App')
         st.markdown('''
@@ -33,8 +38,8 @@ def main():
     pdf = st.file_uploader("Upload your file" , type ="pdf")
     if pdf:
         if not openai_api_key:
-                st.warning("Please add your OpenAI API key to continue.")
-                st.stop()
+            st.warning("Please add your OpenAI API key to continue.")
+            st.stop()        
 
     if pdf is not None:
         pdf_reader = PdfReader(pdf)
@@ -64,11 +69,21 @@ def main():
             VectorStore = FAISS.from_texts(chunks,embedding=embeddings)
             
             VectorStore.save_local(f"{store_name}")
+
+    if "messages" not in st.session_state:
+       st.session_state.messages = []
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
     
 
-    query = st.text_input("Ask questions about your pdf")
+    query = st.chat_input("Ask questions about your pdf")
 
     if query:
+        st.session_state.messages.append({"role": "user", "content": query})
+        with st.chat_message("user"):
+          st.markdown(query)
         if not openai_api_key:
             st.warning("Please add your OpenAI API key to continue.")
             st.stop()
@@ -77,8 +92,11 @@ def main():
 
         chain =load_qa_chain(llm=llm,chain_type="stuff")
         response = chain.run(input_documents=docs,question=query)
-        with st.chat_message("ai"):
-             st.write(response)
+        with st.chat_message("assistant"):
+           st.markdown(response)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
+       
             
 
       
@@ -89,4 +107,3 @@ if __name__ == "__main__":
    
 
         
-
