@@ -28,7 +28,7 @@ with st.sidebar:
         openai_api_key = st.text_input("Enter your OpenAI API Key", key="langchain_search_api_key_openai", type="password")
         "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
         add_vertical_space(5)
-        st.write('App by ❤️[Ariel Nestor](https://github.com/NestorMugambi)')
+        
 
 
 load_dotenv()
